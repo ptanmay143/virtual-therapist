@@ -12,8 +12,8 @@ Ask the chatbot about mental health topics and get responses from trained therap
 # Start the Rasa server
 rasa run --cors '*' --port 5005
 
-# Open index.html in your browser
-open index.html
+# Open index.html in your web browser
+# Then navigate to the file or use: python -m http.server 8000
 ```
 
 **Example conversation:**
@@ -34,6 +34,10 @@ The chatbot uses natural language understanding to match your question to the mo
 # Clone and navigate to repository
 git clone https://github.com/ptanmay143/virtual-therapist.git
 cd virtual-therapist
+
+# Create and activate virtual environment (recommended)
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install dependencies
 pip install -r requirements.txt
@@ -72,6 +76,8 @@ The chatbot runs as a REST/SocketIO server on port 5005:
 ```bash
 # Start server with custom options
 rasa run --cors '*' --port 5005 --debug
+# WARNING: --cors '*' allows any origin. For production, specify allowed domains:
+# rasa run --cors 'https://yourdomain.com' --port 5005
 
 # Test in interactive shell
 rasa shell
@@ -105,7 +111,9 @@ This is a proof-of-concept for accessible mental health information, not a repla
 
 ## License
 
-MIT © [Tanmay Pachpande](LICENSE)
+MIT License - See [LICENSE](LICENSE) for details.
+
+Copyright © Tanmay Pachpande
 
 ## Background
 
