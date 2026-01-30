@@ -12,8 +12,9 @@ Ask the chatbot about mental health topics and get responses from trained therap
 # Start the Rasa server
 rasa run --cors '*' --port 5005
 
-# Open index.html in your web browser
-# Then navigate to the file or use: python -m http.server 8000
+# Open index.html directly in your web browser, or serve via HTTP:
+# python -m http.server 8000
+# Then navigate to: http://localhost:8000/index.html
 ```
 
 **Example conversation:**
