@@ -1,130 +1,285 @@
-# virtual-therapist
+<h1 align="center">
+	<a href="https://github.com/ptanmay143/virtual-therapist">
+		<img src="docs/images/logo.svg" alt="Logo" width="100" height="100">
+	</a>
+</h1>
 
-> A conversational AI chatbot that provides psychology-focused FAQ responses based on therapist forum discussions
+<div align="center">
+	Virtual Therapist
+	<br />
+	<a href="#about"><strong>Explore the screenshots »</strong></a>
+	<br />
+	<br />
+	<a href="https://github.com/ptanmay143/virtual-therapist/issues/new?assignees=&labels=bug&template=01_BUG_REPORT.md&title=bug%3A+">Report a Bug</a>
+	·
+	<a href="https://github.com/ptanmay143/virtual-therapist/issues/new?assignees=&labels=enhancement&template=02_FEATURE_REQUEST.md&title=feat%3A+">Request a Feature</a>
+	·
+	<a href="https://github.com/ptanmay143/virtual-therapist/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+">Ask a Question</a>
+</div>
 
-Built with [Rasa](https://rasa.com), this retrieval-based chatbot matches user mental health queries to curated therapist responses, making preliminary psychological guidance accessible through a simple web interface.
+<div align="center">
+<br />
 
-## Usage
+[![Project license](https://img.shields.io/github/license/ptanmay143/virtual-therapist.svg?style=flat-square)](LICENSE)
+[![Pull Requests welcome](https://img.shields.io/badge/PRs-welcome-ff69b4.svg?style=flat-square)](https://github.com/ptanmay143/virtual-therapist/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+[![code with love by ptanmay143](https://img.shields.io/badge/%3C%2F%3E%20with%20%E2%99%A5%20by-ptanmay143-ff1414.svg?style=flat-square)](https://github.com/ptanmay143)
 
-Ask the chatbot about mental health topics and get responses from trained therapists:
+</div>
+
+<details open="open">
+<summary>Table of Contents</summary>
+
+- [About](#about)
+  - [Built With](#built-with)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Support](#support)
+- [Project Assistance](#project-assistance)
+- [Contributing](#contributing)
+- [Authors & contributors](#authors--contributors)
+- [Security](#security)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+
+</details>
+
+---
+
+## About
+
+Virtual Therapist is a retrieval-based conversational assistant built with Rasa. It maps user questions to predefined FAQ intents and returns curated text responses sourced from therapist-style Q&A data.
+
+The project is designed for informational mental-health Q&A exploration, not for diagnosis or emergency intervention. It emphasizes deterministic response retrieval over generative model behavior, making output reproducible and directly traceable to curated responses in the training/domain files.
+
+Runtime behavior combines a Rasa server (`rasa run`) and a browser widget (`index.html`) loaded from the `rasa-webchat` CDN. The widget connects to the local Socket.IO endpoint and sends user utterances for intent matching and response selection.
+
+The training data and response templates are substantial. `data/nlu.yml` defines many `faq/*` intents with examples, `domain.yml` contains corresponding `utter_faq/*` responses, and `rules.yml` routes all `faq` intents to `utter_faq` through `RulePolicy` behavior.
+
+<details>
+<summary>Screenshots</summary>
+<br>
+
+Add screenshots under `docs/images/` and update this section if needed.
+
+|                               Chat Widget                               |                               Conversation                               |
+| :---------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+| <img src="docs/images/screenshot.png" title="Chat Widget" width="100%"> | <img src="docs/images/screenshot.png" title="Conversation" width="100%"> |
+
+</details>
+
+### Built With
+
+- **Python** — runtime for Rasa and data tooling.
+- **Rasa** — NLU, retrieval intent handling, and chat server runtime.
+- **Pandas** — data processing dependency (used in notebook-based preparation flow).
+- **Rasa Webchat (CDN)** — browser chat widget integration.
+- **YAML configuration** — pipeline/policy/domain/rules declarations.
+
+---
+
+## Getting Started
+
+Setup consists of Python dependency installation, model training, server startup, and launching the browser widget page.
+
+### Prerequisites
+
+- **Python 3.x** compatible with your selected Rasa release.
+- **pip** for dependency installation.
+- **Rasa CLI available** (`rasa --version`).
+- Optional: **Jupyter** if you plan to execute `main.ipynb` for data regeneration.
+
+### Installation
+
+1. Clone repository.
 
 ```bash
-# Start the Rasa server
-rasa run --cors '*' --port 5005
-
-# Open index.html directly in your web browser, or serve via HTTP:
-# python -m http.server 8000
-# Then navigate to: http://localhost:8000/index.html
-```
-
-**Example conversation:**
-
-```
-User: "My husband cheated on me and I'm struggling to forgive him"
-Bot:  [Returns therapist advice on handling infidelity and rebuilding trust]
-
-User: "I'm feeling anxious about starting therapy"
-Bot:  [Provides guidance on what to expect in therapy sessions]
-```
-
-The chatbot uses natural language understanding to match your question to the most relevant response from its FAQ database of therapist forum discussions.
-
-## Installation
-
-```bash
-# Clone and navigate to repository
 git clone https://github.com/ptanmay143/virtual-therapist.git
+```
+
+2. Enter project folder.
+
+```bash
 cd virtual-therapist
+```
 
-# Create and activate virtual environment (recommended)
+3. Create and activate virtual environment.
+
+```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+venv\Scripts\activate
+```
 
-# Install dependencies
+4. Install Python dependencies.
+
+```bash
 pip install -r requirements.txt
+```
 
-# Train the model (if not already trained)
+5. Train Rasa model.
+
+```bash
 rasa train
 ```
 
-**Requirements:**
-- Python 3.8+
-- [Rasa](https://rasa.com/docs/) - Conversational AI framework
-- [Pandas](https://pandas.pydata.org/) - Data processing
-
-## How It Works
-
-The system uses a Rasa NLU pipeline with:
-
-1. **Intent Classification** - DIETClassifier matches user input to FAQ categories
-2. **Response Selection** - ResponseSelector retrieves the most relevant therapist answer
-3. **Web Interface** - SocketIO-based chat widget for browser interaction
-
-```
-User Query → Rasa NLU → Intent Classification → Response Retrieval → Therapist Answer
-```
-
-**Data pipeline:**
-- `data/raw.csv` contains question-answer pairs from therapist forums
-- `main.ipynb` processes the CSV and generates Rasa training files
-- `config.yml` defines the NLU pipeline (tokenizers, classifiers)
-- `domain.yml` maps intents to responses
-
-## API
-
-The chatbot runs as a REST/SocketIO server on port 5005:
+6. Start chatbot server.
 
 ```bash
-# Start server with custom options
-rasa run --cors '*' --port 5005 --debug
-# WARNING: --cors '*' allows any origin. For production, specify allowed domains:
-# rasa run --cors 'https://yourdomain.com' --port 5005
+rasa run --cors "*" --port 5005
+```
 
-# Test in interactive shell
+7. Open web widget page.
+
+```bash
+python -m http.server 8000
+```
+
+8. Verify setup.
+
+```text
+Open http://localhost:8000/index.html and check that the widget connects
+to http://localhost:5005 and returns FAQ responses.
+```
+
+### Environment Variables
+
+Current repository configuration does not require environment variables.
+
+| Variable | Required | Default | Description                                                | Example Value |
+| -------- | -------- | ------- | ---------------------------------------------------------- | ------------- |
+| None     | No       | N/A     | Runtime config is declared in YAML and command-line flags. | N/A           |
+
+---
+
+## Usage
+
+Train model:
+
+```bash
+rasa train
+```
+
+Run API/chat server:
+
+```bash
+rasa run --cors "*" --port 5005 --debug
+```
+
+Test in shell:
+
+```bash
 rasa shell
 ```
 
-**Configuration files:**
+Serve widget page:
 
-- `config.yml` - NLU pipeline (DIET classifier, response selector, 100 epochs)
-- `domain.yml` - Response templates and actions (auto-generated from CSV)
-- `credentials.yml` - Channel settings (REST, SocketIO)
-- `data/nlu.yml` - Training examples (auto-generated from CSV)
+```bash
+python -m http.server 8000
+```
 
-**Adding new Q&A pairs:**
+Open:
 
-1. Add rows to `data/raw.csv` with columns: `questionTitle`, `questionText`, `answerText`
-2. Run `jupyter nbconvert --to notebook --execute main.ipynb` to regenerate training files
-3. Retrain with `rasa train`
+```text
+http://localhost:8000/index.html
+```
 
-## Limitations
+Core config behavior:
 
-- **FAQ-only responses** - No contextual conversation memory or multi-turn dialogues
-- **No crisis detection** - Cannot assess emotional urgency or escalate to human support
-- **Static responses** - Retrieves pre-written answers, doesn't generate novel text
-- **Not HIPAA-compliant** - Data stored in plaintext without privacy measures
+- `config.yml`: pipeline includes `WhitespaceTokenizer`, `RegexFeaturizer`, two `CountVectorsFeaturizer` stages, `DIETClassifier` (100 epochs), and `ResponseSelector` with `retrieval_intent: faq`.
+- `rules.yml`: maps intent `faq` to action `utter_faq`.
+- `credentials.yml`: enables `rest` and `socketio` with `user_uttered`/`bot_uttered` events.
 
-This is a proof-of-concept for accessible mental health information, not a replacement for professional therapy.
+Data-refresh workflow (if updating source Q&A):
 
-**Important:** If you're experiencing a mental health crisis:
-- National Suicide Prevention Lifeline: 1-800-273-8255
-- Crisis Text Line: Text HOME to 741741
+1. Update `data/raw.csv`.
+2. Execute notebook pipeline in `main.ipynb` to regenerate training/domain content.
+3. Re-train model with `rasa train`.
+
+API/channel summary:
+
+- Socket endpoint: `http://localhost:5005` (from `index.html` widget config).
+- REST channel enabled in `credentials.yml`.
+
+---
+
+## Roadmap
+
+See the [open issues](https://github.com/ptanmay143/virtual-therapist/issues) for a full list of proposed features and known bugs.
+
+- [Top Feature Requests](https://github.com/ptanmay143/virtual-therapist/issues?q=label%3Aenhancement+is%3Aopen+sort%3Areactions-%2B1-desc) (Add your votes using the 👍 reaction)
+- [Top Bugs](https://github.com/ptanmay143/virtual-therapist/issues?q=is%3Aissue+is%3Aopen+label%3Abug+sort%3Areactions-%2B1-desc) (Add your votes using the 👍 reaction)
+- [Newest Bugs](https://github.com/ptanmay143/virtual-therapist/issues?q=is%3Aopen+is%3Aissue+label%3Abug)
+
+Potential future direction includes stronger fallback handling, conversation-state support beyond single-turn FAQ retrieval, better quality control for response content, and production-grade safety/privacy hardening.
+
+---
+
+## Support
+
+Reach out to the maintainer at one of the following places:
+
+- [GitHub issues](https://github.com/ptanmay143/virtual-therapist/issues/new?assignees=&labels=question&template=04_SUPPORT_QUESTION.md&title=support%3A+)
+- Contact options listed on [this GitHub profile](https://github.com/ptanmay143)
+
+---
+
+## Project Assistance
+
+If you want to say **thank you** or support active development of Virtual Therapist:
+
+- Add a [GitHub Star](https://github.com/ptanmay143/virtual-therapist) to the project.
+- Contribute safer, better-curated mental-health Q&A datasets.
+- Share reproducible evaluations of intent/response quality.
+
+Together, we can make Virtual Therapist **better**!
+
+---
+
+## Contributing
+
+First off, thanks for taking the time to contribute! Contributions are what make the open-source community such an amazing place to learn, inspire, and create.
+
+Suggested workflow:
+
+1. Fork and branch from `master`.
+2. Apply targeted changes to data, config, or integration code.
+3. Re-train and validate with `rasa shell` and webchat.
+4. Document any dataset or behavior changes in your pull request.
+
+No dedicated `docs/CONTRIBUTING.md` file exists currently.
+
+---
+
+## Authors & Contributors
+
+The original setup of this repository is by [Tanmay Pachpande](https://github.com/ptanmay143).
+
+For a full list of all authors and contributors, see [the contributors page](https://github.com/ptanmay143/virtual-therapist/contributors).
+
+---
+
+## Security
+
+Virtual Therapist follows good practices of security, but 100% security cannot be assured. Virtual Therapist is provided **"as is"** without any **warranty**. Use at your own risk.
+
+Important safety note: this project is an informational FAQ assistant and is not a substitute for licensed professional care, emergency response, or crisis intervention. No dedicated `docs/SECURITY.md` exists currently.
+
+---
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
+This project is licensed under the **MIT License**.
 
-Copyright © Tanmay Pachpande
+See [LICENSE](LICENSE) for more information.
 
-## Background
+---
 
-This project demonstrates retrieval-based conversational AI for mental health FAQ. It's built on therapist forum data to make psychological guidance more accessible, but should complement (not replace) professional mental health services.
+## Acknowledgements
 
-For production use, consider:
-- Adding fallback handling for out-of-domain queries
-- Implementing conversation context tracking
-- Adding sentiment analysis for crisis detection
-- Enhancing data privacy and HIPAA compliance
-- Expanding the FAQ dataset with diverse mental health topics
+- Rasa open-source community and documentation ecosystem.
+- Contributors to mental-health Q&A datasets and annotation workflows.
+- Python data and NLP tooling communities.
 
-See [Rasa documentation](https://rasa.com/docs/) for extending the NLU pipeline or deploying to production.
+<!-- Generated by README_GENERATOR_PROMPT v0.1 -->
